@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Realtime GPS Tracker</title>
+    <link rel="stylesheet" href="map.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+</head>
+<body>
+    <div class="bg"></div>
+    <div class="bg-others"> 
+        <div class="container">
+            <h1>Realtime GPS Tracker with Raspberry PI</h1>
+            <center><hr style="height:2px; border:none; color:#ffffff; background-color:#ffffff; width:35%; margin: 0 auto 0 auto;"></center>
+            <p>by StackOver22</p>  
+            <center><div id="map-canvas"></div></center>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/7.20.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.20.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.20.0/firebase-database.js"></script>
+    <script>
+        var map;
+        var marker;
+        var lineCoordinates = [];
+    
+        var initialize = function () {
+            map = new google.maps.Map(document.getElementById('map-canvas'), { center: { lat: 0, lng: 0 }, zoom: 2 });
+            marker = new google.maps.Marker({ map: map });
+        };
+    
+        const firebaseConfig = {
+            apiKey: "YOUR_FIREBASE_API_KEY",
+            authDomain: "your-project-id.firebaseapp.com",
+            databaseURL: "https://your-project-id.firebaseio.com",
+            projectId: "your-project-id",
+            storageBucket: "your-project-id.appspot.com",
+            messagingSenderId: "your-messaging-sender-id",
+            appId: "your-app-id",
+            measurementId: "your-measurement-id"
+        };
+    
+        firebase.initializeApp(firebaseConfig);
+    
+        var db = firebase.database().ref();
+    
+        db.on("value", function (snapshot) {
+            var gps = snapshot.val();
+            console.log(gps.LAT);
+            console.log(gps.LNG);
+    
+            var lat = gps.LAT;
+            var lng = gps.LNG;
+    
+            map.setCenter({ lat: lat, lng: lng, alt: 0 });
+            marker.setPosition({ lat: lat, lng: lng, alt: 0 });
+    
+            lineCoordinates.push(new google.maps.LatLng(lat, lng));
+    
+            var lineCoordinatesPath = new google.maps.Polyline({
+                path: lineCoordinates,
+                geodesic: true,
+                strokeColor: '#2E10FF',
+                strokeOpacity: 1.0,
+                strokeWeight: 2
+            });
+    
+            lineCoordinatesPath.setMap(map);
+        }, function (error) {
+            console.log("Error: " + error.code);
+        });
+    </script>
+    
+    <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&key=YOUR_GOOGLE_MAPS_API_KEY&callback=initialize"></script>
+</body>
+</html>
