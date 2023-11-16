@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Realtime GPS Tracker</title>
-    <link rel="stylesheet" href="map.css">
+    <!-- Corrected path for the CSS file -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
 </head>
@@ -13,8 +14,8 @@
     <div class="bg-others"> 
         <div class="container">
             <h1>Realtime GPS Tracker with Raspberry PI</h1>
-            <center><hr style="height:2px; border:none; color:#ffffff; background-color:#ffffff; width:35%; margin: 0 auto 0 auto;"></center>
-            <p>by StackOver22</p>  
+            <center><hr class="hr1"></center>
+            <p>by Memory Reboot</p>  
             <center><div id="map-canvas"></div></center>
         </div>
     </div>
@@ -26,12 +27,12 @@
         var map;
         var marker;
         var lineCoordinates = [];
-    
+
         var initialize = function () {
             map = new google.maps.Map(document.getElementById('map-canvas'), { center: { lat: 0, lng: 0 }, zoom: 2 });
             marker = new google.maps.Marker({ map: map });
         };
-    
+
         const firebaseConfig = {
             apiKey: "YOUR_FIREBASE_API_KEY",
             authDomain: "your-project-id.firebaseapp.com",
@@ -42,24 +43,24 @@
             appId: "your-app-id",
             measurementId: "your-measurement-id"
         };
-    
+
         firebase.initializeApp(firebaseConfig);
-    
+
         var db = firebase.database().ref();
-    
+
         db.on("value", function (snapshot) {
             var gps = snapshot.val();
             console.log(gps.LAT);
             console.log(gps.LNG);
-    
+
             var lat = gps.LAT;
             var lng = gps.LNG;
-    
+
             map.setCenter({ lat: lat, lng: lng, alt: 0 });
             marker.setPosition({ lat: lat, lng: lng, alt: 0 });
-    
+
             lineCoordinates.push(new google.maps.LatLng(lat, lng));
-    
+
             var lineCoordinatesPath = new google.maps.Polyline({
                 path: lineCoordinates,
                 geodesic: true,
@@ -67,7 +68,7 @@
                 strokeOpacity: 1.0,
                 strokeWeight: 2
             });
-    
+
             lineCoordinatesPath.setMap(map);
         }, function (error) {
             console.log("Error: " + error.code);
