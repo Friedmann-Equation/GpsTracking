@@ -54,7 +54,7 @@
         }
 
         footer {
-            background: linear-gradient(90deg, #7200ca, #9a00e8);
+            background: #ffffff;
             padding: 20px;
             text-align: center;
             font-size: 14px;
@@ -102,6 +102,10 @@
             margin-left: 40px;
         }
 
+        .foot {
+            max-width: 50%;
+        }
+
         .top {
             background: #f1f5f9;
         }
@@ -112,7 +116,7 @@
             align-items: center;
             margin-top: 20px;
         }
-    
+
         .team-member {
             width: 100px;
             height: 100px;
@@ -124,10 +128,55 @@
             color: #fff;
             font-weight: bold;
             font-size: 18px;
-            border: 2px solid #fff; /* White border */
-            margin: 0 10px; /* Add spacing between circles */
+            border: 2px solid #fff;
+            margin: 0 10px;
+            transition: background-color 0.3s ease-in-out;
         }
 
+        .team-member:hover {
+            background-color: #9a00e8;
+        }
+
+        /* Additional styles for better aesthetics */
+        .fhead {
+            margin-top: 40px;
+            font-size: 36px;
+            font-weight: bold;
+            color: #fff;
+            letter-spacing: 2px;
+        }
+
+        .team-section {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+            padding: 30px;
+            margin: 20px;
+        }
+
+        .feature {
+            color: #9a00e8;
+        }
+
+        .fhead {
+            color: #ffffff;
+            font-weight: bold;
+            font-size: 24px;
+            margin-top: 0;
+        }
+
+        .drop {
+            text-align: center;
+            margin-top: 20px;
+            font-color: #9a00e8;
+        }
+
+        .location {
+            height: 300px;
+            margin-top: 50px;
+            margin-bottom: 50px;
+            color: #9a00e8;
+        }
     </style>
 
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
@@ -164,12 +213,13 @@
             const firebaseConfig = {
                 apiKey: "AIzaSyCAHbHcSfN2vVoXYEt4mPz-N7el7lhJULc",
                 authDomain: "onyx-etching-405523.firebaseapp.com",
+                databaseURL: "https://onyx-etching-405523-default-rtdb.firebaseio.com",
                 projectId: "onyx-etching-405523",
                 storageBucket: "onyx-etching-405523.appspot.com",
                 messagingSenderId: "785881644826",
                 appId: "1:785881644826:web:e40ff21af1c2e5b271f6a3",
                 measurementId: "G-DF65H5MD80"
-            };
+              };              
 
             firebase.initializeApp(firebaseConfig);
 
@@ -205,78 +255,130 @@
     </div>
 
     <section>
-        <h2>Key Features</h2>
+        <div class="fhead">Key Features</div>
         <p>Discover the powerful features that make NeuTrack stand out from the rest.</p>
-        <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#feature1Collapse"
-            aria-expanded="false" aria-controls="feature1Collapse">
-            Feature 1
-        </button>
 
-        <div class="collapse" id="feature1Collapse">
-            <div class="card card-body">
-                <!-- Add detailed information about Feature 1 here -->
-                <p>Feature 1: This is a powerful feature that...</p>
+        <div class="drop">
+            <img src="{{ url_for('static', filename='image/location.png') }}" alt="Example Image" class="location">
+            <button class="btn feature" type="button" data-toggle="collapse" data-target="#feature1Collapse"
+                aria-expanded="false" aria-controls="feature1Collapse">
+                Shortest Path Finder
+            </button>
+            <div class="collapse" id="feature1Collapse">
+                <div class="card card-body feature">
+                    <div>Finds the shortest path for users to navigate roads and reach their destination safely.</div>
+                </div>
             </div>
         </div>
 
-        <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#feature2Collapse"
-            aria-expanded="false" aria-controls="feature2Collapse">
-            Feature 2
-        </button>
-
-        <div class="collapse" id="feature2Collapse">
-            <div class="card card-body">
-                <!-- Add detailed information about Feature 2 here -->
-                <p>Feature 2: Another amazing feature that...</p>
+        <div  class="drop">
+            <img src="{{ url_for('static', filename='image/headphone.png') }}" alt="Example Image" class="location">
+            <button class="btn feature" type="button" data-toggle="collapse" data-target="#feature2Collapse"
+                aria-expanded="false" aria-controls="feature2Collapse">
+                Voice Assistance
+            </button>
+            <div class="collapse" id="feature2Collapse">
+                <div class="card card-body feature">
+                    <div>Provides auditory guidance for visually impaired users, relaying important information about their surroundings and directions.
+                        Enables communication by allowing users to speak and the device transcribes their speech into text.</div>
+                </div>
             </div>
         </div>
 
+        <div class="drop">
+            <img src="{{ url_for('static', filename='image/home.png') }}" alt="Example Image" class="location">
+            <button class="btn feature" type="button" data-toggle="collapse" data-target="#feature3Collapse"
+                aria-expanded="false" aria-controls="feature3Collapse">
+                Safe Distance Limitation
+            </button>
+            <div class="collapse" id="feature3Collapse">
+                <div class="card card-body feature">
+                    <div>Limits the distance traveled by users with Alzheimer's to ensure they can safely return home using the shortest path.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="drop">
+            <img src="{{ url_for('static', filename='image/detect.png') }}" alt="Example Image" class="location">
+            <button class="btn feature" type="button" data-toggle="collapse" data-target="#feature4Collapse"
+                aria-expanded="false" aria-controls="feature4Collapse">
+                Object Recognition
+            </button>
+            <div class="collapse" id="feature4Collapse">
+                <div class="card card-body feature">
+                    <div>Utilizes object recognition technology to help users, particularly those with Alzheimer's, identify and remember people they are interacting with.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="drop">
+            <img src="{{ url_for('static', filename='image/warning.png') }}" alt="Example Image" class="location">
+            <button class="btn feature" type="button" data-toggle="collapse" data-target="#feature5Collapse"
+                aria-expanded="false" aria-controls="feature5Collapse">
+                Obstacles Avoidance
+            </button>
+            <div class="collapse" id="feature5Collapse">
+                <div class="card card-body feature">
+                    <div>UWhen an obstacle is detected within a distance of less than 70 centimeters, the device triggers a motor vibrator to provide haptic feedback to the user. The vibration signal alerts the user about the presence of obstacles, enhancing safety during navigation.</div>
+                </div>
+            </div>
+        </div>
     </section>
 
     <section>
-        <h2>Frequently Asked Questions</h2>
+        <div class="fhead">Frequently Asked Questions</div>
         <p>Uncover insights into NeuTrack's user-friendly features and enhance your experience.</p>
-        <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#faqCollapse"
-            aria-expanded="false" aria-controls="faqCollapse">
-            FAQs
-        </button>
-        <div class="collapse" id="faqCollapse">
-            <div class="card card-body">
-                <p>Question 1: What are the system requirements for NeuTrack?</p>
-                <p>Answer 1: The system requirements include...</p>
 
-                <p>Question 2: How do I get started with NeuTrack?</p>
-                <p>Answer 2: To get started, you need to...</p>
+        <div class="drop">
+            <button class="btn feature" type="button" data-toggle="collapse" data-target="#faqCollapse"
+                aria-expanded="false" aria-controls="faqCollapse">
+                What is NeuTrack, and how does it assist individuals with visual impairments?
+            </button>
+            <div class="collapse" id="faqCollapse">
+                <div class="card card-body feature">
+                    <div>NeuTrack is a smart glove designed to enhance the independence of visually impaired individuals and Alzheimer. It uses advanced technologies like Text-to-Speech, Speech-to-Text, and object recognition to provide real-time information about their surroundings, assist in navigation, and identify objects.</div>
+                </div>
             </div>
         </div>
 
-        <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#faqCollapse"
-            aria-expanded="false" aria-controls="faqCollapse">
-            FAQs
-        </button>
-        <div class="collapse" id="faqCollapse">
-            <div class="card card-body">
-                <p>Question 1: What are the system requirements for NeuTrack?</p>
-                <p>Answer 1: The system requirements include...</p>
-
-                <p>Question 2: How do I get started with NeuTrack?</p>
-                <p>Answer 2: To get started, you need to...</p>
+        <div class="drop">
+            <button class="btn feature" type="button" data-toggle="collapse" data-target="#faqCollapse2"
+                aria-expanded="false" aria-controls="faqCollapse2">
+                Is NeuTrack only for individuals with visual impairments, or can it be used by others?      
+            </button>
+            <div class="collapse" id="faqCollapse2">
+                <div class="card card-body feature">
+                    <div>While NeuTrack is designed with features catering to visual impairments and Alzheimer, its versatility makes it useful for a broader audience. The device's functionalities, such as Text-to-Speech and Speech-to-Text, can benefit a range of users.</div>
+                </div>
             </div>
         </div>
+        
+        <div class="drop">
+            <button class="btn feature" type="button" data-toggle="collapse" data-target="#faqCollapse3"
+                aria-expanded="false" aria-controls="faqCollapse3">
+                What algorithm used in the GPS Tracking feature?      
+            </button>
+            <div class="collapse" id="faqCollapse3">
+                <div class="card card-body feature">
+                    <div>The A* Algorithm is employed for efficient pathfinding and navigation. It optimizes the route based on real-time GPS data, ensuring the wearer is guided along the safest and most accessible paths, particularly beneficial for individuals with visual impairments and Alzheimer.</div>
+                </div>
+            </div>
+        </div>
+
     </section>
 
     <section>
-        <h2>Creators</h2>
+        <div class="fhead">Creators</div>
         <p>Meet the brilliant minds behind NeuTrack and their journey in crafting this innovative solution.</p>
         <div class="team-members">
-            <div class="team-member">Fira</div>
-            <div class="team-member">Arund</div>
+            <div class="team-member">Firania</div>
+            <div class="team-member">Arundaya</div>
             <div class="team-member">Pelangi</div>
         </div>
     </section>
 
     <footer>
-        &copy; 2023 NeuTrack. All rights reserved.
+        <img src="{{ url_for('static', filename='image/foot.png') }}" alt="Example Image" class="foot">
     </footer>
 
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
