@@ -1,80 +1,294 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Realtime GPS Tracker</title>
-    <!-- Corrected path for the CSS file -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    <title>NeuTrack</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+        integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+        crossorigin="anonymous">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #7200ca, #9a00e8);
+            color: #fff;
+        }
+
+        header {
+            background: linear-gradient(90deg, #7200ca, #9a00e8);
+            padding: 10px;
+            text-align: center;
+            font-size: 36px;
+            font-weight: bold;
+            color: #fff;
+            letter-spacing: 2px;
+        }
+
+        #map-window {
+            height: 600px;
+            background: #2c2c2c;
+        }
+
+        section {
+            padding: 30px;
+            margin: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+        }
+
+        h2 {
+            margin-bottom: 20px;
+            font-size: 30px;
+            font-weight: bold;
+            color: #fff;
+            letter-spacing: 2px;
+        }
+
+        p {
+            line-height: 1.6;
+            color: #fff;
+        }
+
+        footer {
+            background: linear-gradient(90deg, #7200ca, #9a00e8);
+            padding: 20px;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        .navbar {
+            background-color: #2980b9;
+            padding: 10px;
+            border-bottom: 2px solid #ffffff;
+        }
+
+        .navbar-brand {
+            color: #ffffff;
+        }
+
+        .container {
+            background-color: #2c2c2c;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            margin-top: 50px;
+        }
+
+        h1, h2,
+        p {
+            color: #fff;
+        }
+
+        #map-canvas {
+            height: 500px;
+            width: 100%;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+
+        hr {
+            background-color: #3498db;
+        }
+
+        .logo {
+            max-width: 50%;
+            height: auto;
+            margin-bottom: 40px;
+            background: #f1f5f9;
+            margin-left: 40px;
+        }
+
+        .top {
+            background: #f1f5f9;
+        }
+
+        .team-members {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 20px;
+        }
+    
+        .team-member {
+            width: 100px;
+            height: 100px;
+            background: #2c2c2c;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-weight: bold;
+            font-size: 18px;
+            border: 2px solid #fff; /* White border */
+            margin: 0 10px; /* Add spacing between circles */
+        }
+
+    </style>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+        integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+        crossorigin="anonymous">
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+        integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+        crossorigin="anonymous">
 </head>
+
 <body>
-    <div class="bg"></div>
-    <div class="bg-others"> 
+
+    <div class="top">
+        <img src="{{ url_for('static', filename='image/logo.png') }}" alt="Example Image" class="logo">
+    </div>
+    <div id="map-window">
         <div class="container">
-            <h1>Realtime GPS Tracker with Raspberry PI</h1>
-            <center><hr class="hr1"></center>
-            <p>by Memory Reboot</p>  
-            <center><div id="map-canvas"></div></center>
+            <div id="map-canvas"></div>
         </div>
+        <script src="https://www.gstatic.com/firebasejs/7.20.0/firebase-app.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/7.20.0/firebase-auth.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/7.20.0/firebase-database.js"></script>
+        <script>
+            var map;
+            var marker;
+            var lineCoordinates = [];
+
+            var initialize = function () {
+                map = new google.maps.Map(document.getElementById('map-canvas'), { center: { lat: 0, lng: 0 }, zoom: 2 });
+                marker = new google.maps.Marker({ map: map });
+            };
+
+            const firebaseConfig = {
+                apiKey: "AIzaSyCAHbHcSfN2vVoXYEt4mPz-N7el7lhJULc",
+                authDomain: "onyx-etching-405523.firebaseapp.com",
+                projectId: "onyx-etching-405523",
+                storageBucket: "onyx-etching-405523.appspot.com",
+                messagingSenderId: "785881644826",
+                appId: "1:785881644826:web:e40ff21af1c2e5b271f6a3",
+                measurementId: "G-DF65H5MD80"
+            };
+
+            firebase.initializeApp(firebaseConfig);
+
+            var db = firebase.database().ref();
+
+            db.on("value", function (snapshot) {
+                var gps = snapshot.val();
+                console.log(gps.LAT);
+                console.log(gps.LNG);
+
+                var lat = gps.LAT;
+                var lng = gps.LNG;
+
+                map.setCenter({ lat: lat, lng: lng, alt: 0 });
+                marker.setPosition({ lat: lat, lng: lng, alt: 0 });
+
+                lineCoordinates.push(new google.maps.LatLng(lat, lng));
+
+                var lineCoordinatesPath = new google.maps.Polyline({
+                    path: lineCoordinates,
+                    geodesic: true,
+                    strokeColor: '#2E10FF',
+                    strokeOpacity: 1.0,
+                    strokeWeight: 2
+                });
+
+                lineCoordinatesPath.setMap(map);
+            }, function (error) {
+                console.log("Error: " + error.code);
+            });
+        </script>
+        <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&key=AIzaSyCzrQo-UW4Oh2RTR7Tavqe17jjFp5zaFRE&callback=initialize"></script>
     </div>
 
-    <script src="https://www.gstatic.com/firebasejs/7.20.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/7.20.0/firebase-auth.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/7.20.0/firebase-database.js"></script>
-    <script>
-        var map;
-        var marker;
-        var lineCoordinates = [];
+    <section>
+        <h2>Key Features</h2>
+        <p>Discover the powerful features that make NeuTrack stand out from the rest.</p>
+        <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#feature1Collapse"
+            aria-expanded="false" aria-controls="feature1Collapse">
+            Feature 1
+        </button>
 
-        var initialize = function () {
-            map = new google.maps.Map(document.getElementById('map-canvas'), { center: { lat: 0, lng: 0 }, zoom: 2 });
-            marker = new google.maps.Marker({ map: map });
-        };
+        <div class="collapse" id="feature1Collapse">
+            <div class="card card-body">
+                <!-- Add detailed information about Feature 1 here -->
+                <p>Feature 1: This is a powerful feature that...</p>
+            </div>
+        </div>
 
-        const firebaseConfig = {
-            apiKey: "YOUR_FIREBASE_API_KEY",
-            authDomain: "your-project-id.firebaseapp.com",
-            databaseURL: "https://your-project-id.firebaseio.com",
-            projectId: "your-project-id",
-            storageBucket: "your-project-id.appspot.com",
-            messagingSenderId: "your-messaging-sender-id",
-            appId: "your-app-id",
-            measurementId: "your-measurement-id"
-        };
+        <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#feature2Collapse"
+            aria-expanded="false" aria-controls="feature2Collapse">
+            Feature 2
+        </button>
 
-        firebase.initializeApp(firebaseConfig);
+        <div class="collapse" id="feature2Collapse">
+            <div class="card card-body">
+                <!-- Add detailed information about Feature 2 here -->
+                <p>Feature 2: Another amazing feature that...</p>
+            </div>
+        </div>
 
-        var db = firebase.database().ref();
+    </section>
 
-        db.on("value", function (snapshot) {
-            var gps = snapshot.val();
-            console.log(gps.LAT);
-            console.log(gps.LNG);
+    <section>
+        <h2>Frequently Asked Questions</h2>
+        <p>Uncover insights into NeuTrack's user-friendly features and enhance your experience.</p>
+        <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#faqCollapse"
+            aria-expanded="false" aria-controls="faqCollapse">
+            FAQs
+        </button>
+        <div class="collapse" id="faqCollapse">
+            <div class="card card-body">
+                <p>Question 1: What are the system requirements for NeuTrack?</p>
+                <p>Answer 1: The system requirements include...</p>
 
-            var lat = gps.LAT;
-            var lng = gps.LNG;
+                <p>Question 2: How do I get started with NeuTrack?</p>
+                <p>Answer 2: To get started, you need to...</p>
+            </div>
+        </div>
 
-            map.setCenter({ lat: lat, lng: lng, alt: 0 });
-            marker.setPosition({ lat: lat, lng: lng, alt: 0 });
+        <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#faqCollapse"
+            aria-expanded="false" aria-controls="faqCollapse">
+            FAQs
+        </button>
+        <div class="collapse" id="faqCollapse">
+            <div class="card card-body">
+                <p>Question 1: What are the system requirements for NeuTrack?</p>
+                <p>Answer 1: The system requirements include...</p>
 
-            lineCoordinates.push(new google.maps.LatLng(lat, lng));
+                <p>Question 2: How do I get started with NeuTrack?</p>
+                <p>Answer 2: To get started, you need to...</p>
+            </div>
+        </div>
+    </section>
 
-            var lineCoordinatesPath = new google.maps.Polyline({
-                path: lineCoordinates,
-                geodesic: true,
-                strokeColor: '#2E10FF',
-                strokeOpacity: 1.0,
-                strokeWeight: 2
-            });
+    <section>
+        <h2>Creators</h2>
+        <p>Meet the brilliant minds behind NeuTrack and their journey in crafting this innovative solution.</p>
+        <div class="team-members">
+            <div class="team-member">Fira</div>
+            <div class="team-member">Arund</div>
+            <div class="team-member">Pelangi</div>
+        </div>
+    </section>
 
-            lineCoordinatesPath.setMap(map);
-        }, function (error) {
-            console.log("Error: " + error.code);
-        });
-    </script>
-    
-    <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&key=YOUR_GOOGLE_MAPS_API_KEY&callback=initialize"></script>
+    <footer>
+        &copy; 2023 NeuTrack. All rights reserved.
+    </footer>
+
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+        integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+        integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+        crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+        integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+        crossorigin="anonymous"></script>
+
 </body>
+
 </html>
