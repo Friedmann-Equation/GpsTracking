@@ -30,3 +30,4 @@ tk
 urllib3
 Werkzeug>=3.0.1
 wheel
+Flask
