@@ -30,6 +30,38 @@
         #map-window {
             height: 650px;
             background: #2c2c2c;
+            position: relative; 
+        }
+
+        .earth-campaign-banner {
+            position: absolute;
+            top: 20px;
+            left: -300px; 
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-size: 18px;
+            font-weight: bold;
+            color: #7200ca;
+            z-index: 9999;
+            animation: moveBanner 10s linear infinite;
+        }
+
+        @keyframes moveBanner {
+            0% {
+                left: -300px;
+            }
+            100% {
+                left: 100%; 
+            }
+        }
+
+        section {
+            padding: 30px;
+            margin: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
         }
 
         section {
@@ -191,7 +223,9 @@
 
     <div class="top">
         <img src="{{ url_for('static', filename='image/logo.png') }}" alt="Example Image" class="logo">
+
     </div>
+    <div class="earth-campaign-banner">Join our Earth Campaign: From Waste to Wonder!</div>
     <div id="map-window">
         <div class="container">
             <div id="map-canvas"></div>
@@ -218,21 +252,18 @@
                 directionsRenderer = new google.maps.DirectionsRenderer();
                 directionsRenderer.setMap(map);
             
-                // Attach click event to the button
                 document.getElementById('shortestPathBtn').addEventListener('click', findShortestPath);
             };
 
             function findShortestPath() {
-                // Get user's current location or specify the start location
                 var startLocation = new google.maps.LatLng(START_LAT, START_LNG);
             
-                // Specify the destination location (you may replace it with a specific location)
                 var endLocation = new google.maps.LatLng(END_LAT, END_LNG);
             
                 var request = {
                     origin: startLocation,
                     destination: endLocation,
-                    travelMode: 'WALKING' // You can change the travel mode as needed
+                    travelMode: 'WALKING' 
                 };
             
                 directionsService.route(request, function (result, status) {
